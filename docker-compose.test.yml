@@ -2,7 +2,5 @@ version: '3'
 
 services:
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    build: ./
     command: yarn test
