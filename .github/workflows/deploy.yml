@@ -54,4 +54,4 @@ jobs:
       - name: Docker run
         run: |
           docker ps -q --filter "name=together-api" | grep -q . && docker stop together-api && docker rm -fv together-api
-          docker run -d -p 3000:3000 --name together-api --restart always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
+          docker run -d -p 80:3000 --name together-api --restart always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
