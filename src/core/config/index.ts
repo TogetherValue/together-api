@@ -1,4 +1,6 @@
 export interface AppConfig {
+  ENV: string;
+  NAME: string;
   PORT: string | number;
   BASE_URL: string;
 }
