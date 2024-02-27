@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig, Configurations, DBConfig } from '.';
+import { AppConfig, Configurations, DBConfig, GITHUBConfig } from '.';
 
 @Injectable()
 export class TogetherConfigService {
@@ -12,5 +12,9 @@ export class TogetherConfigService {
 
   getDBConfig(): DBConfig {
     return this.configService.getOrThrow('DB');
+  }
+
+  getGitHubConfig(): GITHUBConfig {
+    return this.configService.getOrThrow('GITHUB');
   }
 }

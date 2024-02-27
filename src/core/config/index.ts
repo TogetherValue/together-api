@@ -12,7 +12,13 @@ export interface DBConfig {
   DB_PORT: number | string;
 }
 
+export interface GITHUBConfig {
+  GITHUB_CLIENT_ID: string;
+  GITHUB_SECRET_KEY: string;
+}
+
 export interface Configurations {
   APP: AppConfig;
   DB: DBConfig;
+  GITHUB: GITHUBConfig;
 }
