@@ -1,13 +1,24 @@
-import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  ClassProvider,
+  Global,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { ConfigModule } from './config/config.module';
 import { getTypeOrmModule } from './database/typeorm/typeorm.module';
 import { WinstonConfigService } from './logger/winston-config.service';
 import { WinstonModule } from 'nest-winston';
 import { TransactionManager } from './database/typeorm/transaction.manager';
 import { TransactionMiddleware } from './middleware/transaction.middleware';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ErrorInterceptor } from './interceptor/error.interceptor';
 
 const modules = [ConfigModule];
 const providers = [TransactionManager];
+const interceptors: ClassProvider[] = [
+  { provide: APP_INTERCEPTOR, useClass: ErrorInterceptor },
+];
 
 @Global()
 @Module({
@@ -16,8 +27,8 @@ const providers = [TransactionManager];
     WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
     ...modules,
   ],
-  providers: [...providers],
-  exports: [...modules],
+  providers: [...providers, ...interceptors],
+  exports: [...modules, ...providers],
 })
 export class CoreModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
