@@ -1,10 +1,13 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from './config/config.module';
 import { getTypeOrmModule } from './database/typeorm/typeorm.module';
 import { WinstonConfigService } from './logger/winston-config.service';
 import { WinstonModule } from 'nest-winston';
+import { TransactionManager } from './database/typeorm/transaction.manager';
+import { TransactionMiddleware } from './middleware/transaction.middleware';
 
 const modules = [ConfigModule];
+const providers = [TransactionManager];
 
 @Global()
 @Module({
@@ -13,7 +16,11 @@ const modules = [ConfigModule];
     WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
     ...modules,
   ],
-  providers: [],
+  providers: [...providers],
   exports: [...modules],
 })
-export class CoreModule {}
+export class CoreModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TransactionMiddleware).forRoutes('*');
+  }
+}
