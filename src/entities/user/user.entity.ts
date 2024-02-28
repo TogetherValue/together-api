@@ -1,3 +1,4 @@
+import { Encrypt } from 'src/common/util/encrypt';
 import { BaseEntity } from 'src/core/database/typeorm/base.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -18,7 +19,7 @@ export class User extends BaseEntity {
   @Column('varchar', { length: 40, default: '' })
   introduction: string;
 
-  @Column('varchar', { length: 50, nullable: true })
+  @Column('varchar', { length: 200, nullable: true })
   refreshToken: string;
 
   static signUp(
@@ -34,5 +35,9 @@ export class User extends BaseEntity {
     user.nickname = nickname;
 
     return user;
+  }
+
+  async updateRefreshToken(refreshToken: string | null) {
+    this.refreshToken = await Encrypt.createHash(refreshToken);
   }
 }

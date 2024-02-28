@@ -14,8 +14,9 @@ import { TransactionMiddleware } from './middleware/transaction.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorInterceptor } from './interceptor/error.interceptor';
 import { ApiResponseInterceptor } from './interceptor/apiResponse.interceptor';
+import { JWTModule } from './jwt/jwt.module';
 
-const modules = [ConfigModule];
+const modules = [ConfigModule, JWTModule];
 const providers = [TransactionManager];
 const interceptors: ClassProvider[] = [
   { provide: APP_INTERCEPTOR, useClass: ErrorInterceptor },
