@@ -1,4 +1,6 @@
 export interface AppConfig {
+  ENV: string;
+  NAME: string;
   PORT: string | number;
   BASE_URL: string;
 }
@@ -10,7 +12,19 @@ export interface DBConfig {
   DB_PORT: number | string;
 }
 
+export interface GITHUBConfig {
+  GITHUB_CLIENT_ID: string;
+  GITHUB_SECRET_KEY: string;
+}
+
+export interface JWTConfig {
+  JWT_ACCESS_SECRET: string;
+  JWT_REFRESH_SECRET: string;
+}
+
 export interface Configurations {
   APP: AppConfig;
   DB: DBConfig;
+  GITHUB: GITHUBConfig;
+  JWT: JWTConfig;
 }
