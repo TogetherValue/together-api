@@ -18,12 +18,8 @@ export class TransactionMiddleware implements NestMiddleware {
   use(_req: Request, _res: Response, next: NextFunction) {
     const namespace =
       getNamespace(TOGETHER_NAMESPACE) ?? createNamespace(TOGETHER_NAMESPACE);
-    this.logger.log(`Hit TransactionMiddleware`);
 
     return namespace.runAndReturn(async () => {
-      this.logger.log(
-        `TOGETHER_NAMESPACE Run with status: ${!!namespace.active}`,
-      );
       Promise.resolve()
         .then(() => {
           try {
