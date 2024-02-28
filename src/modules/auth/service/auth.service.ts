@@ -13,6 +13,5 @@ export class AuthService {
     // todo
     // 1. 회원가입
     // 2. jwt
-    // 3. 리펙토링
   }
 }
