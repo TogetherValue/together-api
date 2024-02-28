@@ -1,5 +1,5 @@
 export interface IGithubInfo {
-  githubId: string;
+  githubId: number;
   avatarUrl: string;
   githubUrl: string;
   nickname: string;

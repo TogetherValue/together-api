@@ -4,7 +4,7 @@ import { Column, Entity } from 'typeorm';
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
   @Column({ type: 'int', unsigned: true })
-  githubId: string;
+  githubId: number;
 
   @Column('varchar', { length: 100 })
   avatarUrl: string;
@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   refreshToken: string;
 
   static signUp(
-    githubId: string,
+    githubId: number,
     githubUrl: string,
     avatarUrl: string,
     nickname: string,
