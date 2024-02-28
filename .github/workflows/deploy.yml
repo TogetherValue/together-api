@@ -64,9 +64,16 @@ jobs:
           if docker ps -q --filter "name=together-api" | grep -q .; then
             docker stop together-api
             docker rm -fv together-api
+          else  
+            echo "No Container found"
           fi
       - name: Remove All Containers
-        run: docker rm -f $(docker ps -aq)
+        run: |
+          if docker images -q | grep -q .; then
+            docker rmi -f $(docker images -q)
+          else
+            echo "No images found"
+          fi
       - name: Docker run
         run: |
           docker run -d -p 80:3000 --name together-api --restart always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
