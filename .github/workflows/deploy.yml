@@ -59,8 +59,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
+      - name: Stop and Remove Existing Container
+        run: |
+          if docker ps -q --filter "name=together-api" | grep -q .; then
+            docker stop together-api
+            docker rm -fv together-api
+          fi
+      - name: Remove All Containers
+        run: docker rm -f $(docker ps -aq)
       - name: Docker run
         run: |
-          docker ps -q --filter "name=together-api" | grep -q . && docker stop together-api && docker rm -fv together-api
-          docker rm -f $(docker ps -aq)
           docker run -d -p 80:3000 --name together-api --restart always ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
