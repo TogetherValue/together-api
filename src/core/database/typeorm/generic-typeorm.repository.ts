@@ -29,8 +29,13 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
     const res = await this.getRepository().findOne(findOption);
 
     if (!res) {
-      throw new BadRequestException(`don't exist ${filters}`);
+      let msgList = [];
+      for (let [key, value] of Object.entries(filters)) {
+        msgList.push(`${key}: ${value}`);
+      }
+      throw new BadRequestException(`don't exist ${msgList.join(', ')}`);
     }
+
     return plainToInstance(this.classType, res);
   }
 
