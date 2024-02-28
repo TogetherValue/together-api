@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig, Configurations, DBConfig, GITHUBConfig } from '.';
+import {
+  AppConfig,
+  Configurations,
+  DBConfig,
+  GITHUBConfig,
+  JWTConfig,
+} from '.';
 
 @Injectable()
 export class TogetherConfigService {
@@ -16,5 +22,9 @@ export class TogetherConfigService {
 
   getGitHubConfig(): GITHUBConfig {
     return this.configService.getOrThrow('GITHUB');
+  }
+
+  getJWTConfig(): JWTConfig {
+    return this.configService.getOrThrow('JWT');
   }
 }

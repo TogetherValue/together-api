@@ -21,5 +21,9 @@ export const configurations = (): Configurations => {
       GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
       GITHUB_SECRET_KEY: process.env.GITHUB_SECRET_KEY,
     },
+    JWT: {
+      JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
+      JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    },
   };
 };
