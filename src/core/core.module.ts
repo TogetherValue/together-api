@@ -15,6 +15,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorInterceptor } from './interceptor/error.interceptor';
 import { ApiResponseInterceptor } from './interceptor/apiResponse.interceptor';
 import { JWTModule } from './jwt/jwt.module';
+import { LoggerMiddleware } from './middleware/logger.middleware';
 
 const modules = [ConfigModule, JWTModule];
 const providers = [TransactionManager];
@@ -36,5 +37,6 @@ const interceptors: ClassProvider[] = [
 export class CoreModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(TransactionMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
