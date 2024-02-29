@@ -22,4 +22,9 @@ export class AuthController {
 
     return this.authService.refreshTokens(userId, refreshToken);
   }
+
+  @Get('test')
+  async test() {
+    return this.authService.test();
+  }
 }

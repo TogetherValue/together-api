@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { GetGithubInfoQueryDto } from 'src/common/request/auth/get-githubInfo.dto';
 import { GithubProvider } from './github.provider';
 import { UserRepository } from 'src/entities/user/user.repository';
@@ -13,6 +9,8 @@ import {
   IRefreshTokenPayload,
 } from 'src/common/types/jwt';
 import { Encrypt } from 'src/common/util/encrypt';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +42,14 @@ export class AuthService {
       await this.githubProvider.getGithubInfo(code);
 
     const isUserExist = await this.userRepository.findOne({ githubId });
-    if (isUserExist) throw new ConflictException('User already exists');
+    if (isUserExist) {
+      const tokens = await this.generateTokens(isUserExist.id);
+
+      await isUserExist.updateRefreshToken(tokens.refreshToken);
+      await this.userRepository.update(isUserExist);
+
+      return tokens;
+    }
 
     const userEntity = User.signUp(githubId, githubUrl, avatarUrl, nickname);
     const user = await this.userRepository.createEntity(userEntity);
@@ -72,5 +77,36 @@ export class AuthService {
     await this.userRepository.update(user);
 
     return tokens;
+  }
+
+  async test() {
+    const url = 'https://helloinyong.tistory.com/350';
+
+    const result = await axios.get(url);
+
+    const $ = cheerio.load(result.data);
+    const title = $('title').text();
+    const thumbnail =
+      $('meta[name="image"]').attr('content') ||
+      $('meta[property="image"]').attr('content') ||
+      $('meta[name="og:image"]').attr('content') ||
+      $('meta[property="og:image"]').attr('content') ||
+      $('meta[name="twitter:image"]').attr('content') ||
+      $('meta[property="twitter:image"]').attr('content');
+    const description =
+      $('meta[name="og:description"]').attr('content') ||
+      $('meta[property="og:description"]').attr('content') ||
+      $('meta[name="description"]').attr('content') ||
+      $('meta[property="description"]').attr('content') ||
+      $('meta[name="twitter:description"]').attr('content') ||
+      $('meta[property="twitter:description"]').attr('content');
+
+    const createdAt = $('meta[property="Date"]').attr('content');
+
+    console.log('Title:', title);
+    console.log('Thumbnail:', thumbnail);
+    console.log('description', description.length);
+
+    console.log('CreatedAt:', createdAt);
   }
 }

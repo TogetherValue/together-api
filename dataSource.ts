@@ -4,11 +4,13 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import * as path from 'path';
 import { SeederOptions } from 'typeorm-extension';
 
-dotenv.config({ path: `./dotenv/.env.dev` });
+const nodeEnv = process.env.NODE_ENV || 'dev';
+dotenv.config({ path: `./dotenv/.env.${nodeEnv}` });
 const entityPath = path.join(__dirname + '/src/entities/*/*.entity.ts');
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
+  host: process.env.NODE_ENV === 'prod' ? process.env.DB_HOST : 'localhost',
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER_NAME,
   password: process.env.DB_PASSWORD,
