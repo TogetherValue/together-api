@@ -10,7 +10,7 @@ COPY . .
 
 RUN git submodule init
 
-RUN git submodule update --remote --merge
+RUN git submodule update
 
 RUN yarn build
 
