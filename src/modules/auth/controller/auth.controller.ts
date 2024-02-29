@@ -25,6 +25,8 @@ export class AuthController {
 
   @Get('test')
   async test() {
+    console.log('tes');
+
     return this.authService.test();
   }
 }
