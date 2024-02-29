@@ -10,4 +10,8 @@ COPY . .
 
 RUN yarn build
 
+RUN git submodule update --remote --merge
+
+RUN git submodule update
+
 CMD ["yarn", "start"]
