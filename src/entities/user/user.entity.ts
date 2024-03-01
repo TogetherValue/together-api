@@ -1,9 +1,10 @@
 import { Encrypt } from 'src/common/util/encrypt';
 import { BaseEntity } from 'src/core/database/typeorm/base.entity';
 import { Column, Entity } from 'typeorm';
+import { IUser } from 'types/user/common';
 
 @Entity({ name: 'users' })
-export class User extends BaseEntity {
+export class User extends BaseEntity implements IUser {
   @Column({ type: 'int', unsigned: true })
   githubId: number;
 

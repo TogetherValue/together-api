@@ -6,10 +6,7 @@ import {
 } from 'typeorm';
 import { RootEntity } from './root.entity';
 
-export abstract class BaseEntity extends RootEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export abstract class BaseTimeEntity extends RootEntity {
   @CreateDateColumn({
     nullable: false,
     type: 'timestamptz',
@@ -27,4 +24,9 @@ export abstract class BaseEntity extends RootEntity {
     type: 'timestamptz',
   })
   deletedAt: Date | null;
+}
+
+export abstract class BaseEntity extends BaseTimeEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 }
