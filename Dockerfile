@@ -8,9 +8,7 @@ RUN yarn
 
 COPY . .
 
-RUN git submodule init
-
-RUN git submodule update
+RUN git submodule update --init
 
 RUN yarn build
 
