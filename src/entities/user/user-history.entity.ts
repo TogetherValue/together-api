@@ -8,9 +8,9 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-import { IUserHistory } from 'types/userPostHistory';
 import { User } from './user.entity';
 import { Post } from '../post/post.entity';
+import { IUserHistory } from 'types/userPostHistory/common';
 
 @Entity({ name: 'user_history' })
 @Index(['userId', 'postId'], { unique: true })
