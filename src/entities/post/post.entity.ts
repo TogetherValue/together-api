@@ -1,8 +1,16 @@
 import { BaseEntity } from 'src/core/database/typeorm/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { IPost, PostCategory } from 'types/post';
 import { IUser } from 'types/user/common';
 import { User } from '../user/user.entity';
+import { Scrap } from '../scrap/scrap.entity';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
@@ -24,7 +32,16 @@ export class Post extends BaseEntity implements IPost {
   @Column('varchar', { length: 50 })
   category: PostCategory;
 
-  @ManyToOne(() => User, (user) => user.Posts)
+  @ManyToMany(() => User, (user) => user.ScrapPosts)
+  ScrapedUsers: User[];
+
+  @OneToMany(() => Scrap, (scrap) => scrap.Post)
+  Scraps: Scrap[];
+
+  @ManyToOne(() => User, (user) => user.Posts, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn([{ name: 'writer_id', referencedColumnName: 'id' }])
   Writer: User;
 }
