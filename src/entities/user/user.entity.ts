@@ -1,7 +1,8 @@
 import { Encrypt } from 'src/common/util/encrypt';
 import { BaseEntity } from 'src/core/database/typeorm/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IUser } from 'types/user/common';
+import { Post } from '../post/post.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -21,7 +22,10 @@ export class User extends BaseEntity implements IUser {
   introduction: string;
 
   @Column('varchar', { length: 200, nullable: true })
-  refreshToken: string;
+  refreshToken: string | null;
+
+  @OneToMany(() => Post, (post) => post.Writer)
+  Posts: Post[];
 
   static signUp(
     githubId: number,
