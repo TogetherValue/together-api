@@ -5,6 +5,7 @@ import { IUser } from 'types/user/common';
 import { Post } from '../post/post.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from './user-history.entity';
+import { Subscription } from '../subscription/subscription.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -48,6 +49,12 @@ export class User extends BaseEntity implements IUser {
 
   @OneToMany(() => UserHistory, (userHistory) => userHistory.User)
   UserHistory: UserHistory[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.Subscriber)
+  Subscribers: Subscription[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.targetUserId)
+  Subscriptions: Subscription[];
 
   static signUp(
     githubId: number,
