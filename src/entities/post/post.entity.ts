@@ -11,6 +11,7 @@ import { IPost, PostCategory } from 'types/post';
 import { IUser } from 'types/user/common';
 import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
+import { UserHistory } from '../user/user-history.entity';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
@@ -37,6 +38,9 @@ export class Post extends BaseEntity implements IPost {
 
   @OneToMany(() => Scrap, (scrap) => scrap.Post)
   Scraps: Scrap[];
+
+  @OneToMany(() => UserHistory, (userHistory) => userHistory.Post)
+  UserHistory: UserHistory[];
 
   @ManyToOne(() => User, (user) => user.Posts, {
     onDelete: 'SET NULL',

@@ -4,6 +4,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { IUser } from 'types/user/common';
 import { Post } from '../post/post.entity';
 import { Scrap } from '../scrap/scrap.entity';
+import { UserHistory } from './user-history.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -44,6 +45,9 @@ export class User extends BaseEntity implements IUser {
 
   @OneToMany(() => Scrap, (scrap) => scrap.User)
   Scraps: Scrap[];
+
+  @OneToMany(() => UserHistory, (userHistory) => userHistory.User)
+  UserHistory: UserHistory[];
 
   static signUp(
     githubId: number,
