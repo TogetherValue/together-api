@@ -1,7 +1,7 @@
 import { Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { GetGithubInfoQueryDto } from 'src/common/request/auth/get-githubInfo.dto';
-import { RefreshTokenGuard } from 'src/common/guard/refreshToken.guard';
+import { RefreshTokenGuard } from 'src/core/guard/refreshToken.guard';
 import { IValidatedRefreshToken } from 'src/common/types/jwt';
 import { User } from 'src/core/decorator/user.decorator';
 

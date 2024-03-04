@@ -68,4 +68,8 @@ export class Post extends BaseEntity implements IPost {
 
     return post;
   }
+
+  isOwnered(userId: IUser['id']) {
+    return this.writerId === userId;
+  }
 }
