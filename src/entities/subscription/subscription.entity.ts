@@ -25,4 +25,12 @@ export class Subscription extends BaseTimeEntity implements ISubscription {
   })
   @JoinColumn([{ name: 'target_user_id', referencedColumnName: 'id' }])
   TargetUser: User;
+
+  static of(subscriberId: number, targetUserId: number) {
+    const subscription = new Subscription();
+    subscription.subscriberId = subscriberId;
+    subscription.targetUserId = targetUserId;
+
+    return subscription;
+  }
 }
