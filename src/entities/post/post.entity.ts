@@ -22,7 +22,7 @@ export class Post extends BaseEntity implements IPost {
   title: string;
 
   @Column('varchar', { length: 100 })
-  thumnail: string;
+  thumbnail: string;
 
   @Column('varchar', { length: 200 })
   link: string;
