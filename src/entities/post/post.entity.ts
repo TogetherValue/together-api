@@ -7,11 +7,11 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { IPost, PostCategory } from 'types/post';
 import { IUser } from 'types/user/common';
 import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from '../user/user-history.entity';
+import { IPost, PostCategory } from 'types/post/common';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
