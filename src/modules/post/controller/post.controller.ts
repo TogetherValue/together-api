@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostService } from './post.service';
+import { PostService } from '../service/post.service';
 import { CreatePostDto } from 'src/common/request/post/create-post.dto';
 import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
 import { User } from 'src/core/decorator/user.decorator';
