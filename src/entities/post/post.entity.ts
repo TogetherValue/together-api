@@ -21,7 +21,7 @@ export class Post extends BaseEntity implements IPost {
   @Column('varchar', { length: 100 })
   title: string;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 200 })
   thumbnail: string;
 
   @Column('varchar', { length: 200 })
@@ -48,4 +48,24 @@ export class Post extends BaseEntity implements IPost {
   })
   @JoinColumn([{ name: 'writer_id', referencedColumnName: 'id' }])
   Writer: User;
+
+  static of(
+    link: string,
+    category: PostCategory,
+    writerId: IUser['id'],
+    thumbnail: IPost['thumbnail'],
+    description: IPost['description'],
+    title: IPost['title'],
+  ) {
+    const post = new Post();
+
+    post.writerId = writerId;
+    post.link = link;
+    post.category = category;
+    post.thumbnail = thumbnail;
+    post.description = description;
+    post.title = title;
+
+    return post;
+  }
 }
