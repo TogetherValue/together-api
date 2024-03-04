@@ -12,6 +12,8 @@ import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from '../user/user-history.entity';
 import { IPost, PostCategory } from 'types/post/common';
+import { Type } from 'class-transformer';
+import { GetPostsRes } from 'src/common/response/post/getPostsRes';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
@@ -71,5 +73,14 @@ export class Post extends BaseEntity implements IPost {
 
   isOwnered(userId: IUser['id']) {
     return this.writerId === userId;
+  }
+}
+
+export class PostWithWriter extends Post {
+  @Type(() => User)
+  Writer: User;
+
+  toRes() {
+    return new GetPostsRes(this);
   }
 }

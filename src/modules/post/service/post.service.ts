@@ -15,9 +15,7 @@ export class PostService {
     private readonly postRepository: PostRepository,
   ) {}
 
-  async getPosts(
-    getPostsQueryDto: GetPostsQueryDto,
-  ): Promise<GetPosts['Response']> {
+  async getPosts(getPostsQueryDto: GetPostsQueryDto) {
     return this.postRepository.getPostsWithWriter(getPostsQueryDto);
   }
 

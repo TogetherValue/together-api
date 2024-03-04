@@ -51,10 +51,10 @@ export class User extends BaseEntity implements IUser {
   UserHistory: UserHistory[];
 
   @OneToMany(() => Subscription, (subscription) => subscription.Subscriber)
-  Subscribers: Subscription[];
-
-  @OneToMany(() => Subscription, (subscription) => subscription.targetUserId)
   Subscriptions: Subscription[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.TargetUser)
+  Subscribers: Subscription[];
 
   static signUp(
     githubId: number,
