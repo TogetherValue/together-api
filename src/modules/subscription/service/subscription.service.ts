@@ -17,4 +17,18 @@ export class SubscriptionService {
     const subscriptionEntity = Subscription.of(subscriberId, targetUserId);
     return this.subscriptionRepository.createEntity(subscriptionEntity);
   }
+
+  async deleteSubscription(
+    subscriberId: IUser['id'],
+    targetUserId: IUser['id'],
+  ): Promise<any> {
+    await this.subscriptionRepository.findOneOrThrow({
+      subscriberId,
+      targetUserId,
+    });
+    await this.subscriptionRepository.deleteByFilters({
+      subscriberId,
+      targetUserId,
+    });
+  }
 }

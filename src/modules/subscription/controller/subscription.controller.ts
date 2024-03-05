@@ -1,6 +1,6 @@
 import {
   Controller,
-  Get,
+  Delete,
   Param,
   ParseIntPipe,
   Post,
@@ -22,5 +22,14 @@ export class SubscriptionController {
     @User() user: IUser,
   ) {
     return this.subscriptionService.createSubscription(user.id, targetUserId);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete('/:targetUserId')
+  async deleteSubscription(
+    @Param('targetUserId', ParseIntPipe) targetUserId: IUser['id'],
+    @User() user: IUser,
+  ) {
+    return this.subscriptionService.deleteSubscription(user.id, targetUserId);
   }
 }
