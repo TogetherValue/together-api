@@ -21,7 +21,8 @@
     "entity:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync -d ./dataSource.ts",
     "entity:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop -d ./dataSource.ts",
     "entity:sync:prod": "NODE_ENV=setUp ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync -d ./dataSource.ts",
-    "entity:drop:prod": "NODE_ENV=setUp ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop -d ./dataSource.ts"
+    "entity:drop:prod": "NODE_ENV=setUp ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop -d ./dataSource.ts",
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run -d ./dataSource.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.2",

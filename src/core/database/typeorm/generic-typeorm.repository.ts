@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   EntityTarget,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -62,6 +63,10 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
 
   async deleteById(id: number) {
     await this.getRepository().softDelete(id);
+  }
+
+  async deleteByFilters(filters: FindOptionsWhere<T>) {
+    await this.getRepository().softDelete(filters);
   }
 
   protected getRepository(): Repository<T> {

@@ -10,7 +10,7 @@ const entityPath = path.join(__dirname + '/src/entities/*/*.entity.ts');
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
-  host: process.env.NODE_ENV === 'prod' ? process.env.DB_HOST : 'localhost',
+  host: process.env.NODE_ENV === 'setUp' ? process.env.DB_HOST : 'localhost',
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER_NAME,
   password: process.env.DB_PASSWORD,
