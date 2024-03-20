@@ -26,6 +26,18 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
     const [data, total] = await Promise.all([
       this.getRepository().find({
         relations: ['Writer'],
+        select: {
+          Writer: {
+            id: true,
+            avatarUrl: true,
+            githubUrl: true,
+            nickname: true,
+            introduction: true,
+            createdAt: true,
+            deletedAt: true,
+            updatedAt: true,
+          },
+        },
         skip: (page - 1) * take,
         take,
       }),
