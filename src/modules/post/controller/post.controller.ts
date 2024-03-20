@@ -22,8 +22,7 @@ export class PostController {
 
   @Get('')
   async getPosts(@Query() getPostsQueryDto: GetPostsQueryDto) {
-    const results = await this.postService.getPosts(getPostsQueryDto);
-    return results.list.map((res) => res.toRes());
+    return this.postService.getPosts(getPostsQueryDto);
   }
 
   @UseGuards(AccessTokenGuard)

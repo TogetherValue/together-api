@@ -12,8 +12,7 @@ import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from '../user/user-history.entity';
 import { IPost, PostCategory } from 'types/post/common';
-import { Type } from 'class-transformer';
-import { GetPostsRes } from 'src/common/response/post/getPostsRes';
+import { Exclude, Type } from 'class-transformer';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
@@ -77,10 +76,9 @@ export class Post extends BaseEntity implements IPost {
 }
 
 export class PostWithWriter extends Post {
+  @Exclude()
+  writerId: IUser['id'] | null;
+
   @Type(() => User)
   Writer: User;
-
-  toRes() {
-    return new GetPostsRes(this);
-  }
 }
