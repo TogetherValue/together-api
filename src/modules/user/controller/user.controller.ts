@@ -4,6 +4,7 @@ import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
 import { User } from 'src/core/decorator/user.decorator';
 import { UserService } from '../service/user.service';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
+import { OpenGuard } from 'src/core/guard/openGuard';
 
 @Controller('users')
 export class UserController {
@@ -18,8 +19,12 @@ export class UserController {
     return this.userService.getSubscriptions(getSubscriptionsQueryDto, user.id);
   }
 
+  @UseGuards(OpenGuard)
   @Get('/:userId')
-  async getUser(@Param('userId') userId: IUser['id']) {
-    return this.userService.getUser(userId);
+  async getUser(@Param('userId') userId: IUser['id'], @User() user: IUser) {
+    let currentUserId = undefined;
+    if (user) currentUserId = user.id;
+
+    return this.userService.getUser(userId, currentUserId);
   }
 }

@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   EntityTarget,
+  FindManyOptions,
   FindOneOptions,
+  FindOptionsRelations,
   FindOptionsWhere,
   Repository,
   SelectQueryBuilder,
@@ -9,6 +11,8 @@ import {
 import { TransactionManager } from './transaction.manager';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { RootEntity } from './root.entity';
+import { PaginationRequest } from 'src/common/pagination/pagination.request';
+import { PaginationBuilder } from 'src/common/pagination/pagination.builder';
 
 @Injectable()
 export abstract class GenericTypeOrmRepository<T extends RootEntity> {
@@ -18,8 +22,25 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
 
   abstract getName(): EntityTarget<T>;
 
-  async getCount(filters: Partial<T>) {
-    return this.getRepository().findAndCount(filters);
+  async paginate(
+    pagination: PaginationRequest,
+    findManyOption?: FindManyOptions<T>,
+  ) {
+    const { take, page } = pagination;
+    const options = {
+      take,
+      skip: (page - 1) * take,
+      ...findManyOption,
+    };
+
+    const [data, total] = await this.getRepository().findAndCount(options);
+
+    return new PaginationBuilder<T>()
+      .setData(plainToInstance(this.classType, data))
+      .setPage(page)
+      .setTake(take)
+      .setTotalCount(total)
+      .build();
   }
 
   async findOne(filters: Partial<T>): Promise<T> {
@@ -46,6 +67,22 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
 
   async findByIdOrThrow(id: number): Promise<T> {
     const findOption: FindOneOptions = { where: { id } };
+    const res = await this.getRepository().findOne(findOption);
+
+    if (!res) {
+      throw new BadRequestException(`don't exist ${id}`);
+    }
+    return plainToInstance(this.classType, res);
+  }
+
+  async findByIdWithJoinOrThrow(
+    id: number,
+    findOptionsRelations: FindOptionsRelations<T>,
+  ): Promise<T> {
+    const findOption: FindOneOptions = {
+      where: { id },
+      relations: findOptionsRelations,
+    };
     const res = await this.getRepository().findOne(findOption);
 
     if (!res) {
