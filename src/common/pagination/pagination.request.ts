@@ -4,7 +4,7 @@ import { IPaginationQuery } from 'types/common';
 
 export enum PaginationDefault {
   PAGE_DEFAULT = 1,
-  TAKE_DEFAULT = 20,
+  TAKE_DEFAULT = 10,
 }
 
 export class PaginationRequest implements IPaginationQuery {
