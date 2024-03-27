@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { IUser } from 'types/user/common';
 import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
 import { User } from 'src/core/decorator/user.decorator';
@@ -15,11 +15,11 @@ export class UserController {
     @Query() getSubscriptionsQueryDto: GetSubscriptionsQueryDto,
     @User() user: IUser,
   ) {
-    const results = await this.userService.getSubscriptions(
-      getSubscriptionsQueryDto,
-      user.id,
-    );
+    return this.userService.getSubscriptions(getSubscriptionsQueryDto, user.id);
+  }
 
-    return results.list.map((res) => res.toRes());
+  @Get('/:userId')
+  async getUser(@Param('userId') userId: IUser['id']) {
+    return this.userService.getUser(userId);
   }
 }
