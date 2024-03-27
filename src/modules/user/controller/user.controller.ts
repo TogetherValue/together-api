@@ -5,6 +5,8 @@ import { User } from 'src/core/decorator/user.decorator';
 import { UserService } from '../service/user.service';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { OpenGuard } from 'src/core/guard/openGuard';
+import { UserShowDto } from 'src/common/response/user/userShowDto';
+import { GetUserInfo } from 'types/user';
 
 @Controller('users')
 export class UserController {
@@ -17,6 +19,13 @@ export class UserController {
     @User() user: IUser,
   ) {
     return this.userService.getSubscriptions(getSubscriptionsQueryDto, user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/info')
+  async getUserInfo(@User() user: IUser): Promise<GetUserInfo['Response']> {
+    const userInfo = await this.userService.getUserInfo(user.id);
+    return new UserShowDto(userInfo);
   }
 
   @UseGuards(OpenGuard)

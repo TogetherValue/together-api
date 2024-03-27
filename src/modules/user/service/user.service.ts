@@ -45,6 +45,10 @@ export class UserService {
     return new GetUserWithNonLoginDto(userWithSubscriber, posts.list);
   }
 
+  async getUserInfo(userId: IUser['id']) {
+    return this.userRepository.findByIdOrThrow(userId);
+  }
+
   async getSubscriptions(
     getSubscriptionsQueryDto: GetSubscriptionsQueryDto,
     userId: IUser['id'],
