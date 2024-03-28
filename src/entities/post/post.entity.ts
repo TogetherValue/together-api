@@ -19,13 +19,13 @@ export class Post extends BaseEntity implements IPost {
   @Column({ type: 'int', unsigned: true, nullable: true })
   writerId: IUser['id'] | null;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 300 })
   title: string;
 
-  @Column('varchar', { length: 200 })
+  @Column('varchar', { length: 500 })
   thumbnail: string;
 
-  @Column('varchar', { length: 200 })
+  @Column('varchar', { length: 500 })
   link: string;
 
   @Column({ type: 'text' })
