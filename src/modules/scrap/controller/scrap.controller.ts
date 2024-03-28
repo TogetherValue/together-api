@@ -25,4 +25,13 @@ export class ScrapController {
   ): Promise<CreateScrap['Response']> {
     return this.scrapService.createScrap(user.id, postId);
   }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete('/:postId')
+  async deleteScrap(
+    @Param('postId', ParseIntPipe) postId: IPost['id'],
+    @User() user: IUser,
+  ) {
+    return this.scrapService.deleteScrap(user.id, postId);
+  }
 }

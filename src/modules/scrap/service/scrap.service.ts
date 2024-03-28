@@ -12,4 +12,15 @@ export class ScrapService {
     const scrapEntity = Scrap.of(userId, postId);
     return this.scrapRepository.createEntity(scrapEntity);
   }
+
+  async deleteScrap(userId: IUser['id'], postId: IPost['id']): Promise<void> {
+    await this.scrapRepository.findOneOrThrow({
+      userId,
+      postId,
+    });
+    await this.scrapRepository.deleteByFilters({
+      userId,
+      postId,
+    });
+  }
 }
