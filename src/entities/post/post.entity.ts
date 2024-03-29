@@ -10,7 +10,7 @@ import {
 import { IUser } from 'types/user/common';
 import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
-import { UserHistory } from '../user/user-history.entity';
+import { UserHistory } from '../user-history/user-history.entity';
 import { Exclude, Type } from 'class-transformer';
 import { IPost, PostCategory } from 'types/post/common';
 

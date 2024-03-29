@@ -8,6 +8,8 @@ import { RedisProvider } from 'src/core/database/redis/redis.provider';
 import { Post } from 'src/entities/post/post.entity';
 import { PostRepository } from 'src/entities/post/post.repository';
 import { ScrapRepository } from 'src/entities/scrap/scrap.repository';
+import { UserHistory } from 'src/entities/user-history/user-history.entity';
+import { UserHistoryRepository } from 'src/entities/user-history/user-history.repository';
 import { CreatePost } from 'types/post';
 import { IPost } from 'types/post/common';
 import { IUser } from 'types/user/common';
@@ -18,6 +20,7 @@ export class PostService {
     private readonly metaDataExtractor: MetaDataExtractor,
     private readonly postRepository: PostRepository,
     private readonly scrapRepository: ScrapRepository,
+    private readonly userHistoryRepository: UserHistoryRepository,
     private readonly redisProvider: RedisProvider,
   ) {}
 
@@ -40,7 +43,22 @@ export class PostService {
     if (
       !(await this.redisProvider.getAll(redisKey)).includes(String(clientKey))
     )
-      this.redisProvider.insert(redisKey, clientKey);
+      await this.redisProvider.insert(redisKey, clientKey);
+
+    if (userId) {
+      const userHistory = await this.userHistoryRepository.findOne({
+        userId,
+        postId,
+      });
+
+      if (userHistory) {
+        userHistory.update();
+        await this.userHistoryRepository.update(userHistory);
+      } else {
+        const userHistoryEntity = UserHistory.of(userId, postId);
+        await this.userHistoryRepository.createEntity(userHistoryEntity);
+      }
+    }
   }
 
   async getPosts(

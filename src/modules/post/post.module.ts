@@ -11,9 +11,15 @@ import { HttpModule } from '@nestjs/axios';
 import { MetaDataExtractor } from 'src/common/util/metaDataExtractor';
 import { ScrapRepositoryModule } from 'src/entities/scrap/scrap-repository.module';
 import { IpMiddleware } from 'src/core/middleware/ip.middleware';
+import { UserHistoryRepositoryModule } from 'src/entities/user-history/user-history-repository.module';
 
 @Module({
-  imports: [HttpModule, PostRepositoryModule, ScrapRepositoryModule],
+  imports: [
+    HttpModule,
+    PostRepositoryModule,
+    ScrapRepositoryModule,
+    UserHistoryRepositoryModule,
+  ],
   controllers: [PostController],
   providers: [PostService, MetaDataExtractor],
 })
