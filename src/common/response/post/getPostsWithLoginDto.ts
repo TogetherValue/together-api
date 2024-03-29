@@ -11,8 +11,8 @@ export class GetPostsWithLoginDto
   @Exclude()
   private readonly _isScraped: boolean;
 
-  constructor(post: Post, scraps: Scrap[]) {
-    super(post);
+  constructor(post: Post, views: number, scraps: Scrap[]) {
+    super(post, views);
     this._isScraped = scraps.some((scrap) => scrap.postId === post.id);
   }
 

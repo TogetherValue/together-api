@@ -17,6 +17,8 @@ export class GetPostsWithNonLoginDto implements IPostWithWriterNonLogin {
   @Exclude()
   private readonly _category: PostCategory;
   @Exclude()
+  private readonly _views: number;
+  @Exclude()
   private readonly _createdAt: Date;
   @Exclude()
   private readonly _updatedAt: Date;
@@ -25,7 +27,7 @@ export class GetPostsWithNonLoginDto implements IPostWithWriterNonLogin {
   @Exclude()
   private readonly _Writer: IUserShow;
 
-  constructor(post: Post) {
+  constructor(post: Post, views: number) {
     this._Writer = post.Writer;
     this._title = post.title;
     this._thumbnail = post.thumbnail;
@@ -33,6 +35,7 @@ export class GetPostsWithNonLoginDto implements IPostWithWriterNonLogin {
     this._description = post.description;
     this._category = post.category;
     this._id = post.id;
+    this._views = views;
     this._createdAt = post.createdAt;
     this._updatedAt = post.updatedAt;
     this._deletedAt = post.deletedAt;
@@ -61,6 +64,10 @@ export class GetPostsWithNonLoginDto implements IPostWithWriterNonLogin {
   @Expose()
   get category(): PostCategory {
     return this._category;
+  }
+  @Expose()
+  get views(): number {
+    return this._views;
   }
   @Expose()
   get createdAt(): Date {

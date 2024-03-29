@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { PostService } from '../service/post.service';
@@ -16,10 +17,24 @@ import { IUser } from 'types/user/common';
 import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { IPost } from 'types/post/common';
 import { OpenGuard } from 'src/core/guard/openGuard';
+import { Request } from 'express';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
+
+  @UseGuards(OpenGuard)
+  @Get('/:postId')
+  async getPost(
+    @Req() req: Request,
+    @Param('postId') postId: IPost['id'],
+    @User() user: IUser,
+  ) {
+    let currentUserId = undefined;
+    if (user) currentUserId = user.id;
+
+    return this.postService.getPost(postId, currentUserId, req.clientIp);
+  }
 
   @UseGuards(OpenGuard)
   @Get('')

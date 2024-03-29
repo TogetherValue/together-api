@@ -2,7 +2,10 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from 'src/common/request/post/create-post.dto';
 import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { GetPostsWithLoginDto } from 'src/common/response/post/getPostsWithLoginDto';
+import { GetPostsWithNonLoginDto } from 'src/common/response/post/getPostsWithNonLoginDto';
 import { MetaDataExtractor } from 'src/common/util/metaDataExtractor';
+import { RedisProvider } from 'src/core/database/redis/redis.provider';
+import { Post } from 'src/entities/post/post.entity';
 import { PostRepository } from 'src/entities/post/post.repository';
 import { ScrapRepository } from 'src/entities/scrap/scrap.repository';
 import { CreatePost } from 'types/post';
@@ -15,7 +18,30 @@ export class PostService {
     private readonly metaDataExtractor: MetaDataExtractor,
     private readonly postRepository: PostRepository,
     private readonly scrapRepository: ScrapRepository,
+    private readonly redisProvider: RedisProvider,
   ) {}
+
+  private async getPostView(post: Post) {
+    const redisKey = `post:${post.id}`;
+    const views = await this.redisProvider.getLength(redisKey);
+
+    return views;
+  }
+
+  async getPost(
+    postId: IPost['id'],
+    userId: IUser['id'] | undefined,
+    clientIp: string,
+  ) {
+    await this.postRepository.findByIdOrThrow(postId);
+    const redisKey = `post:${postId}`;
+    const clientKey = userId ? userId : clientIp;
+
+    if (
+      !(await this.redisProvider.getAll(redisKey)).includes(String(clientKey))
+    )
+      this.redisProvider.insert(redisKey, clientKey);
+  }
 
   async getPosts(
     getPostsQueryDto: GetPostsQueryDto,
@@ -32,14 +58,32 @@ export class PostService {
           userId,
           postIds,
         );
-      const postsWithLogin = posts.list.map(
-        (post) => new GetPostsWithLoginDto(post, scraps),
-      );
 
-      posts.list = postsWithLogin as any;
+      const postWithLoginList = [];
+      for (const post of posts.list) {
+        const views = await this.getPostView(post);
+
+        const getPostWithLoginDto = new GetPostsWithLoginDto(
+          post,
+          views,
+          scraps,
+        );
+        postWithLoginList.push(getPostWithLoginDto);
+      }
+
+      posts.list = postWithLoginList as any;
       return posts;
     }
 
+    const postWithNonLoginList = [];
+    for (const post of posts.list) {
+      const views = await this.getPostView(post);
+
+      const getPostWithNonLoginDto = new GetPostsWithNonLoginDto(post, views);
+      postWithNonLoginList.push(getPostWithNonLoginDto);
+    }
+
+    posts.list = postWithNonLoginList;
     return posts;
   }
 
