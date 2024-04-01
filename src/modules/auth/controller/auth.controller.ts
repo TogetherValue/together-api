@@ -28,6 +28,7 @@ export class AuthController {
     req.res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       sameSite: 'none',
+      secure: true,
     });
     return { accessToken: tokens.accessToken };
   }
@@ -45,6 +46,7 @@ export class AuthController {
     req.res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       sameSite: 'none',
+      secure: true,
     });
 
     return { accessToken: tokens.accessToken };
