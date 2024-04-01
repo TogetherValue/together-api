@@ -40,6 +40,7 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
         },
         skip: (page - 1) * take,
         take,
+        order: { createdAt: 'DESC' },
       }),
       this.getRepository().count(),
     ]);

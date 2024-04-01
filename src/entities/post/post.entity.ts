@@ -10,22 +10,22 @@ import {
 import { IUser } from 'types/user/common';
 import { User } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
-import { UserHistory } from '../user/user-history.entity';
-import { IPost, PostCategory } from 'types/post/common';
+import { UserHistory } from '../user-history/user-history.entity';
 import { Exclude, Type } from 'class-transformer';
+import { IPost, PostCategory } from 'types/post/common';
 
 @Entity({ name: 'posts' })
 export class Post extends BaseEntity implements IPost {
   @Column({ type: 'int', unsigned: true, nullable: true })
   writerId: IUser['id'] | null;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 300 })
   title: string;
 
-  @Column('varchar', { length: 200 })
+  @Column('varchar', { length: 500 })
   thumbnail: string;
 
-  @Column('varchar', { length: 200 })
+  @Column('varchar', { length: 500 })
   link: string;
 
   @Column({ type: 'text' })

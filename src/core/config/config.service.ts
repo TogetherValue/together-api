@@ -6,6 +6,7 @@ import {
   DBConfig,
   GITHUBConfig,
   JWTConfig,
+  RedisConfig,
 } from '.';
 
 @Injectable()
@@ -18,6 +19,10 @@ export class TogetherConfigService {
 
   getDBConfig(): DBConfig {
     return this.configService.getOrThrow('DB');
+  }
+
+  getRedisConfig(): RedisConfig {
+    return this.configService.getOrThrow('REDIS');
   }
 
   getGitHubConfig(): GITHUBConfig {

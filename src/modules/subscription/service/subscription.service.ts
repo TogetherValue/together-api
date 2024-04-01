@@ -21,7 +21,7 @@ export class SubscriptionService {
   async deleteSubscription(
     subscriberId: IUser['id'],
     targetUserId: IUser['id'],
-  ): Promise<any> {
+  ): Promise<void> {
     await this.subscriptionRepository.findOneOrThrow({
       subscriberId,
       targetUserId,

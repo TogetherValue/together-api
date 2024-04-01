@@ -17,6 +17,9 @@ export const configurations = (): Configurations => {
       DB_DATABASE: process.env.DB_DATABASE,
       DB_PORT: process.env.DB_PORT || 5432,
     },
+    REDIS: {
+      REDIS_HOST: process.env.REDIS_HOST,
+    },
     GITHUB: {
       GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
       GITHUB_SECRET_KEY: process.env.GITHUB_SECRET_KEY,
