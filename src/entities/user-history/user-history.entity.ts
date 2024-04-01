@@ -8,7 +8,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-import { User } from './user.entity';
+import { User } from '../user/user.entity';
 import { Post } from '../post/post.entity';
 import { IUserHistory } from 'types/userPostHistory/common';
 
@@ -37,4 +37,17 @@ export class UserHistory extends BaseTimeEntity implements IUserHistory {
   })
   @JoinColumn([{ name: 'post_id', referencedColumnName: 'id' }])
   Post: Post;
+
+  static of(userId: number, postId: number) {
+    const userHistory = new UserHistory();
+    userHistory.userId = userId;
+    userHistory.postId = postId;
+    userHistory.viewedAt = new Date();
+
+    return userHistory;
+  }
+
+  update() {
+    this.viewedAt = new Date();
+  }
 }

@@ -2,9 +2,6 @@ import { BaseTimeEntity } from 'src/core/database/typeorm/base.entity';
 import { Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ISubscription } from 'types/subscription/common';
 import { User } from '../user/user.entity';
-import { Type } from 'class-transformer';
-import { UserShowDto } from 'src/common/response/user/userShowDto';
-import { getSubscriptionsRes } from 'src/common/response/user/getSubscriptionsRes';
 
 @Entity({ name: 'subscriptions' })
 @Index(['subscriberId', 'targetUserId'], { unique: true })
@@ -35,17 +32,5 @@ export class Subscription extends BaseTimeEntity implements ISubscription {
     subscription.targetUserId = targetUserId;
 
     return subscription;
-  }
-}
-
-export class GetSubscriptionsWithUser extends Subscription {
-  @Type(() => User)
-  TargetUser: User;
-
-  toRes() {
-    const targetUser = new UserShowDto(this.TargetUser);
-    this.TargetUser = targetUser as any;
-
-    return new getSubscriptionsRes(this);
   }
 }

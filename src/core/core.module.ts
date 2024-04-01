@@ -16,8 +16,9 @@ import { ErrorInterceptor } from './interceptor/error.interceptor';
 import { ApiResponseInterceptor } from './interceptor/apiResponse.interceptor';
 import { JWTModule } from './jwt/jwt.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { RedisModule } from './database/redis/redis.module';
 
-const modules = [ConfigModule, JWTModule];
+const modules = [ConfigModule, JWTModule, RedisModule];
 const providers = [TransactionManager];
 const interceptors: ClassProvider[] = [
   { provide: APP_INTERCEPTOR, useClass: ErrorInterceptor },

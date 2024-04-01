@@ -4,7 +4,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { IUser } from 'types/user/common';
 import { Post } from '../post/post.entity';
 import { Scrap } from '../scrap/scrap.entity';
-import { UserHistory } from './user-history.entity';
+import { UserHistory } from '../user-history/user-history.entity';
 import { Subscription } from '../subscription/subscription.entity';
 
 @Entity({ name: 'users' })

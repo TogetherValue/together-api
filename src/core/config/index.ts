@@ -12,6 +12,10 @@ export interface DBConfig {
   DB_PORT: number | string;
 }
 
+export interface RedisConfig {
+  REDIS_HOST: string;
+}
+
 export interface GITHUBConfig {
   GITHUB_CLIENT_ID: string;
   GITHUB_SECRET_KEY: string;
@@ -25,6 +29,7 @@ export interface JWTConfig {
 export interface Configurations {
   APP: AppConfig;
   DB: DBConfig;
+  REDIS: RedisConfig;
   GITHUB: GITHUBConfig;
   JWT: JWTConfig;
 }
