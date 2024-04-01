@@ -27,6 +27,7 @@ export class AuthController {
 
     req.res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
+      sameSite: 'none',
     });
     return { accessToken: tokens.accessToken };
   }
@@ -43,6 +44,7 @@ export class AuthController {
     const tokens = await this.authService.refreshTokens(userId, refreshToken);
     req.res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
+      sameSite: 'none',
     });
 
     return { accessToken: tokens.accessToken };
