@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 
 export function setNestApp<T extends INestApplication>(app: T): void {
   app.enableCors({
-    origin: true,
+    origin: ['http://localhost:3000', 'https://together-value.vercel.app'],
     credentials: true,
     exposedHeaders: ['Authorization'],
   });
