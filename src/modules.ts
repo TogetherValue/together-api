@@ -5,6 +5,7 @@ import { UserModule } from './modules/user/user.module';
 import { PostModule } from './modules/post/post.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { ScrapModule } from './modules/scrap/scrap.module';
+import { AppController } from './app.controller';
 
 const applicationModules = [
   AuthModule,
@@ -16,7 +17,7 @@ const applicationModules = [
 
 @Module({
   imports: [CoreModule, ...applicationModules],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class Modules {}
