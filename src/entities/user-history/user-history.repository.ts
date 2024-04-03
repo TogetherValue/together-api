@@ -6,6 +6,7 @@ import { GetUserHistory, UserHistory } from './user-history.entity';
 import { IUser } from 'types/user/common';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
 import { plainToInstance } from 'class-transformer';
+import { PaginationResponse } from 'src/common/pagination/pagination.response';
 
 @Injectable()
 export class UserHistoryRepository extends GenericTypeOrmRepository<UserHistory> {
@@ -20,7 +21,7 @@ export class UserHistoryRepository extends GenericTypeOrmRepository<UserHistory>
   async getUserHistory(
     getUserHistoryQueryDto: GetUserHistoryQueryDto,
     userId: IUser['id'],
-  ) {
+  ): Promise<PaginationResponse<GetUserHistory>> {
     const results = await this.paginate(getUserHistoryQueryDto, {
       where: { userId },
       relations: { Post: { Writer: true } },

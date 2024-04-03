@@ -7,6 +7,7 @@ import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscripti
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { UserShowDto } from 'src/common/response/user/userShowDto';
 import {
+  GetUserActivity,
   GetUserHistory,
   GetUserInfo,
   GetUserPosts,
@@ -38,7 +39,9 @@ export class UserController {
 
   @UseGuards(AccessTokenGuard)
   @Get('/activity')
-  async getUserActivity(@User() user: IUser) {
+  async getUserActivity(
+    @User() user: IUser,
+  ): Promise<GetUserActivity['Response']> {
     return this.userService.getUserActivity(user.id);
   }
 

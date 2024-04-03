@@ -62,7 +62,7 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
   async getUserPosts(
     getUserPostsQueryDto: GetUserPostsQueryDto,
     userId: IUser['id'],
-  ) {
+  ): Promise<PaginationResponse<PostWithWriterWithoutToken>> {
     const results = await this.paginate(getUserPostsQueryDto, {
       where: { writerId: userId },
       relations: { Writer: true },

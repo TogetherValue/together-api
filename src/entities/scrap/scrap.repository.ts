@@ -7,6 +7,7 @@ import { IUser } from 'types/user/common';
 import { IPost } from 'types/post/common';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
 import { plainToInstance } from 'class-transformer';
+import { PaginationResponse } from 'src/common/pagination/pagination.response';
 
 @Injectable()
 export class ScrapRepository extends GenericTypeOrmRepository<Scrap> {
@@ -33,7 +34,7 @@ export class ScrapRepository extends GenericTypeOrmRepository<Scrap> {
   async getUserScraps(
     getUserHistoryQueryDto: GetUserHistoryQueryDto,
     userId: IUser['id'],
-  ) {
+  ): Promise<PaginationResponse<GetUserScraps>> {
     const results = await this.paginate(getUserHistoryQueryDto, {
       where: { userId },
       relations: { Post: { Writer: true } },

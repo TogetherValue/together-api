@@ -52,7 +52,22 @@ export class UserService {
     return new GetUserWithNonLoginDto(userWithSubscriber, posts.list);
   }
 
-  async getUserActivity(userId: IUser['id']) {}
+  async getUserActivity(userId: IUser['id']) {
+    const paginationRequest = new PaginationRequest();
+
+    const [{ list: userHistory }, { list: userScraps }, { list: userPosts }] =
+      await Promise.all([
+        this.getUserHistory(paginationRequest, userId),
+        this.getUserScraps(paginationRequest, userId),
+        this.getUserPosts(paginationRequest, userId),
+      ]);
+
+    return {
+      userHistory,
+      userScraps,
+      userPosts,
+    };
+  }
 
   async getUserHistory(
     getUserHistoryQueryDto: GetUserHistoryQueryDto,
