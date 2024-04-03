@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PaginationRequest } from 'src/common/pagination/pagination.request';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
+import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
 import { GetUserWithNonLoginDto } from 'src/common/response/user/getUserWithLoginDto';
 import { GetUserWithLoginDto } from 'src/common/response/user/getUserWithNonLoginDto';
 import { PostRepository } from 'src/entities/post/post.repository';
+import { ScrapRepository } from 'src/entities/scrap/scrap.repository';
 import { SubscriptionRepository } from 'src/entities/subscription/subscription.repository';
 import { UserHistoryRepository } from 'src/entities/user-history/user-history.repository';
 import { UserRepository } from 'src/entities/user/user.repository';
@@ -16,6 +18,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userHistoryRepository: UserHistoryRepository,
+    private readonly scrapRepository: ScrapRepository,
     private readonly postRepository: PostRepository,
     private readonly subscriptionRepository: SubscriptionRepository,
   ) {}
@@ -60,7 +63,12 @@ export class UserService {
     );
   }
 
-  async getUserScraps(userId: IUser['id']) {}
+  async getUserScraps(
+    getUserScrapsQueryDto: GetUserScrapsQueryDto,
+    userId: IUser['id'],
+  ) {
+    return this.scrapRepository.getUserScraps(getUserScrapsQueryDto, userId);
+  }
 
   async getUserPosts(userId: IUser['id']) {}
 
