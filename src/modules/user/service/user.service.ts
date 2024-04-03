@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PaginationRequest } from 'src/common/pagination/pagination.request';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
+import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
 import { GetUserWithNonLoginDto } from 'src/common/response/user/getUserWithLoginDto';
 import { GetUserWithLoginDto } from 'src/common/response/user/getUserWithNonLoginDto';
@@ -70,7 +71,12 @@ export class UserService {
     return this.scrapRepository.getUserScraps(getUserScrapsQueryDto, userId);
   }
 
-  async getUserPosts(userId: IUser['id']) {}
+  async getUserPosts(
+    getUserPostsQueryDto: GetUserPostsQueryDto,
+    userId: IUser['id'],
+  ) {
+    return this.postRepository.getUserPosts(getUserPostsQueryDto, userId);
+  }
 
   async getUserInfo(userId: IUser['id']) {
     return this.userRepository.findByIdOrThrow(userId);

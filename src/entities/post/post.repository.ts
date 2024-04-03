@@ -2,11 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { EntityTarget } from 'typeorm';
 import { TransactionManager } from 'src/core/database/typeorm/transaction.manager';
-import { Post, PostWithWriter } from './post.entity';
+import {
+  Post,
+  PostWithWriter,
+  PostWithWriterWithoutToken,
+} from './post.entity';
 import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { PaginationBuilder } from 'src/common/pagination/pagination.builder';
 import { plainToInstance } from 'class-transformer';
 import { PaginationResponse } from 'src/common/pagination/pagination.response';
+import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
+import { IUser } from 'types/user/common';
 
 @Injectable()
 export class PostRepository extends GenericTypeOrmRepository<Post> {
@@ -51,5 +57,22 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
       .setTake(take)
       .setTotalCount(total)
       .build();
+  }
+
+  async getUserPosts(
+    getUserPostsQueryDto: GetUserPostsQueryDto,
+    userId: IUser['id'],
+  ) {
+    const results = await this.paginate(getUserPostsQueryDto, {
+      where: { writerId: userId },
+      relations: { Writer: true },
+      order: { createdAt: 'DESC' },
+    });
+
+    results.list = results.list.map((res) =>
+      plainToInstance(PostWithWriterWithoutToken, res),
+    );
+
+    return results;
   }
 }

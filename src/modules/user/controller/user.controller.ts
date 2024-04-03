@@ -6,7 +6,12 @@ import { UserService } from '../service/user.service';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { UserShowDto } from 'src/common/response/user/userShowDto';
-import { GetUserHistory, GetUserInfo, GetUserScraps } from 'types/user';
+import {
+  GetUserHistory,
+  GetUserInfo,
+  GetUserPosts,
+  GetUserScraps,
+} from 'types/user';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
 import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
 import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
@@ -60,8 +65,8 @@ export class UserController {
   async getUserPosts(
     @Query() getUserPostsQueryDto: GetUserPostsQueryDto,
     @User() user: IUser,
-  ) {
-    return this.userService.getUserActivity(user.id);
+  ): Promise<GetUserPosts['Response']> {
+    return this.userService.getUserPosts(getUserPostsQueryDto, user.id);
   }
 
   @UseGuards(OpenGuard)
