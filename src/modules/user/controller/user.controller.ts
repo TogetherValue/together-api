@@ -7,6 +7,9 @@ import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscripti
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { UserShowDto } from 'src/common/response/user/userShowDto';
 import { GetUserInfo } from 'types/user';
+import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
+import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
+import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 
 @Controller('users')
 export class UserController {
@@ -26,6 +29,39 @@ export class UserController {
   async getUserInfo(@User() user: IUser): Promise<GetUserInfo['Response']> {
     const userInfo = await this.userService.getUserInfo(user.id);
     return new UserShowDto(userInfo);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/activity')
+  async getUserActivity(@User() user: IUser) {
+    return this.userService.getUserActivity(user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/history')
+  async getUserHistory(
+    @Query() getUserHistoryQueryDto: GetUserHistoryQueryDto,
+    @User() user: IUser,
+  ) {
+    return this.userService.getUserHistory(getUserHistoryQueryDto, user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/scraps')
+  async getUserScraps(
+    @Query() getUserScrapsQueryDto: GetUserScrapsQueryDto,
+    @User() user: IUser,
+  ) {
+    return this.userService.getUserActivity(user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/posts')
+  async getUserPosts(
+    @Query() getUserPostsQueryDto: GetUserPostsQueryDto,
+    @User() user: IUser,
+  ) {
+    return this.userService.getUserActivity(user.id);
   }
 
   @UseGuards(OpenGuard)

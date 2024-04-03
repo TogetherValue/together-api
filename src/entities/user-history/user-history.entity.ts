@@ -9,8 +9,9 @@ import {
 } from 'typeorm';
 
 import { User } from '../user/user.entity';
-import { Post } from '../post/post.entity';
+import { Post, PostWithWriterWithoutToken } from '../post/post.entity';
 import { IUserHistory } from 'types/userPostHistory/common';
+import { Type } from 'class-transformer';
 
 @Entity({ name: 'user_history' })
 @Index(['userId', 'postId'], { unique: true })
@@ -50,4 +51,9 @@ export class UserHistory extends BaseTimeEntity implements IUserHistory {
   update() {
     this.viewedAt = new Date();
   }
+}
+
+export class GetUserHistory extends UserHistory {
+  @Type(() => PostWithWriterWithoutToken)
+  Post: PostWithWriterWithoutToken;
 }
