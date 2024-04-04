@@ -2,9 +2,10 @@ import { BaseTimeEntity } from 'src/core/database/typeorm/base.entity';
 import { Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { IScrap } from 'types/scrap/common';
 import { User } from '../user/user.entity';
-import { Post } from '../post/post.entity';
+import { Post, PostWithWriterWithoutToken } from '../post/post.entity';
 import { IUser } from 'types/user/common';
 import { IPost } from 'types/post/common';
+import { Type } from 'class-transformer';
 
 @Entity({ name: 'scraps' })
 @Index(['userId', 'postId'], { unique: true })
@@ -36,4 +37,9 @@ export class Scrap extends BaseTimeEntity implements IScrap {
 
     return scrap;
   }
+}
+
+export class GetUserScraps extends Scrap {
+  @Type(() => PostWithWriterWithoutToken)
+  Post: PostWithWriterWithoutToken;
 }

@@ -6,7 +6,16 @@ import { UserService } from '../service/user.service';
 import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { UserShowDto } from 'src/common/response/user/userShowDto';
-import { GetUserInfo } from 'types/user';
+import {
+  GetUserActivity,
+  GetUserHistory,
+  GetUserInfo,
+  GetUserPosts,
+  GetUserScraps,
+} from 'types/user';
+import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
+import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
+import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 
 @Controller('users')
 export class UserController {
@@ -26,6 +35,41 @@ export class UserController {
   async getUserInfo(@User() user: IUser): Promise<GetUserInfo['Response']> {
     const userInfo = await this.userService.getUserInfo(user.id);
     return new UserShowDto(userInfo);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/activity')
+  async getUserActivity(
+    @User() user: IUser,
+  ): Promise<GetUserActivity['Response']> {
+    return this.userService.getUserActivity(user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/history')
+  async getUserHistory(
+    @Query() getUserHistoryQueryDto: GetUserHistoryQueryDto,
+    @User() user: IUser,
+  ): Promise<GetUserHistory['Response']> {
+    return this.userService.getUserHistory(getUserHistoryQueryDto, user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/scraps')
+  async getUserScraps(
+    @Query() getUserScrapsQueryDto: GetUserScrapsQueryDto,
+    @User() user: IUser,
+  ): Promise<GetUserScraps['Response']> {
+    return this.userService.getUserScraps(getUserScrapsQueryDto, user.id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/posts')
+  async getUserPosts(
+    @Query() getUserPostsQueryDto: GetUserPostsQueryDto,
+    @User() user: IUser,
+  ): Promise<GetUserPosts['Response']> {
+    return this.userService.getUserPosts(getUserPostsQueryDto, user.id);
   }
 
   @UseGuards(OpenGuard)
