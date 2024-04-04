@@ -3,7 +3,6 @@ import { IUser } from 'types/user/common';
 import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
 import { User } from 'src/core/decorator/user.decorator';
 import { UserService } from '../service/user.service';
-import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { UserShowDto } from 'src/common/response/user/userShowDto';
 import {
@@ -20,15 +19,6 @@ import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.quer
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @UseGuards(AccessTokenGuard)
-  @Get('/subscriptions')
-  async getSubscriptions(
-    @Query() getSubscriptionsQueryDto: GetSubscriptionsQueryDto,
-    @User() user: IUser,
-  ) {
-    return this.userService.getSubscriptions(getSubscriptionsQueryDto, user.id);
-  }
 
   @UseGuards(AccessTokenGuard)
   @Get('/info')
