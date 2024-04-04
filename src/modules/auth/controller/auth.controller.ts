@@ -2,9 +2,9 @@ import {
   Controller,
   Get,
   Patch,
+  Post,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
@@ -13,6 +13,8 @@ import { RefreshTokenGuard } from 'src/core/guard/refreshToken.guard';
 import { IValidatedRefreshToken } from 'src/common/types/jwt';
 import { User } from 'src/core/decorator/user.decorator';
 import { Request, Response } from 'express';
+import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
+import { Logout } from 'types/auth';
 
 @Controller('auth')
 export class AuthController {
@@ -50,5 +52,11 @@ export class AuthController {
     });
 
     return { accessToken: tokens.accessToken };
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('logout')
+  async logout(@Req() req: Request): Promise<Logout['Response']> {
+    req.res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
   }
 }

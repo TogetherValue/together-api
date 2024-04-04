@@ -76,4 +76,8 @@ export class AuthService {
 
     return tokens;
   }
+
+  getCookieForLogOut() {
+    return `refreshToken=; HttpOnly; Path=/; Max-Age=0`;
+  }
 }
