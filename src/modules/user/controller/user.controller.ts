@@ -11,14 +11,26 @@ import {
   GetUserInfo,
   GetUserPosts,
   GetUserScraps,
+  GetUsers,
 } from 'types/user';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
 import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
 import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
+import { GetUsersQueryDto } from 'src/common/request/user/get-users.query.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('')
+  async getUsers(
+    @Query() getUsersQueryDto: GetUsersQueryDto,
+  ): Promise<GetUsers['Response']> {
+    const results = await this.userService.getUsers(getUsersQueryDto);
+
+    results.list = results.list.map((res) => new UserShowDto(res)) as any;
+    return results;
+  }
 
   @UseGuards(AccessTokenGuard)
   @Get('/info')
