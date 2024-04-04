@@ -6,6 +6,7 @@ import { Post } from '../post/post.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from '../user-history/user-history.entity';
 import { Subscription } from '../subscription/subscription.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity implements IUser {
@@ -74,4 +75,12 @@ export class User extends BaseEntity implements IUser {
   async updateRefreshToken(refreshToken: string | null) {
     this.refreshToken = await Encrypt.createHash(refreshToken);
   }
+}
+
+export class UserShow extends User {
+  @Exclude()
+  githubId: number;
+
+  @Exclude()
+  refreshToken: string | null;
 }

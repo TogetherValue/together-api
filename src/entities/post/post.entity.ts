@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { IUser } from 'types/user/common';
-import { User } from '../user/user.entity';
+import { User, UserShow } from '../user/user.entity';
 import { Scrap } from '../scrap/scrap.entity';
 import { UserHistory } from '../user-history/user-history.entity';
 import { Exclude, Type } from 'class-transformer';
@@ -81,4 +81,9 @@ export class PostWithWriter extends Post {
 
   @Type(() => User)
   Writer: User;
+}
+
+export class PostWithWriterWithoutToken extends Post {
+  @Type(() => UserShow)
+  Writer: UserShow;
 }
