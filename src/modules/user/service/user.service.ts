@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PaginationRequest } from 'src/common/pagination/pagination.request';
-import { GetSubscriptionsQueryDto } from 'src/common/request/user/get-subscriptions.query.dto';
 import { GetUserHistoryQueryDto } from 'src/common/request/user/get-userHistory.query.dto';
 import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 import { GetUserScrapsQueryDto } from 'src/common/request/user/get-userScraps.query.dto';
+import { GetUsersQueryDto } from 'src/common/request/user/get-users.query.dto';
 import { GetUserWithNonLoginDto } from 'src/common/response/user/getUserWithLoginDto';
 import { GetUserWithLoginDto } from 'src/common/response/user/getUserWithNonLoginDto';
 import { PostRepository } from 'src/entities/post/post.repository';
@@ -23,6 +23,12 @@ export class UserService {
     private readonly postRepository: PostRepository,
     private readonly subscriptionRepository: SubscriptionRepository,
   ) {}
+
+  async getUsers(getUsersQueryDto: GetUsersQueryDto) {
+    return this.userRepository.paginate(getUsersQueryDto, {
+      order: { createdAt: 'DESC' },
+    });
+  }
 
   async getUser(
     targetUserId: IUser['id'],
@@ -95,15 +101,5 @@ export class UserService {
 
   async getUserInfo(userId: IUser['id']) {
     return this.userRepository.findByIdOrThrow(userId);
-  }
-
-  async getSubscriptions(
-    getSubscriptionsQueryDto: GetSubscriptionsQueryDto,
-    userId: IUser['id'],
-  ) {
-    return this.subscriptionRepository.getSubscriptions(
-      getSubscriptionsQueryDto,
-      userId,
-    );
   }
 }

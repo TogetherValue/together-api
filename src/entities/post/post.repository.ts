@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
-import { EntityTarget } from 'typeorm';
+import { EntityTarget, In } from 'typeorm';
 import { TransactionManager } from 'src/core/database/typeorm/transaction.manager';
 import {
   Post,
@@ -13,6 +13,8 @@ import { plainToInstance } from 'class-transformer';
 import { PaginationResponse } from 'src/common/pagination/pagination.response';
 import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 import { IUser } from 'types/user/common';
+import { IPost } from 'types/post/common';
+import { GetSubscriptionPostsQueryDto } from 'src/common/request/subscription/get-subscriptionPosts.query.dto';
 
 @Injectable()
 export class PostRepository extends GenericTypeOrmRepository<Post> {
@@ -74,5 +76,30 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
     );
 
     return results;
+  }
+
+  async getSubscriptionPosts(
+    getSubscriptionPostsQueryDto: GetSubscriptionPostsQueryDto,
+    writerIds: Array<IPost['writerId']>,
+  ) {
+    const { page, take } = getSubscriptionPostsQueryDto;
+
+    const [data, total] = await Promise.all([
+      this.getRepository().find({
+        where: { writerId: In(writerIds) },
+        relations: ['Writer'],
+        skip: (page - 1) * take,
+        take,
+        order: { createdAt: 'DESC' },
+      }),
+      this.getRepository().count(),
+    ]);
+
+    return new PaginationBuilder<PostWithWriterWithoutToken>()
+      .setData(plainToInstance(PostWithWriterWithoutToken, data))
+      .setPage(page)
+      .setTake(take)
+      .setTotalCount(total)
+      .build();
   }
 }
