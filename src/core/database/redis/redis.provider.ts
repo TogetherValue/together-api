@@ -6,7 +6,6 @@ import {
   generateRedisRecommendedCategoryKey,
   generateRedisViewsCategoryKey,
 } from 'src/common/constant/redis';
-import { PaginationDefault } from 'src/common/pagination/pagination.request';
 import { PostCategory } from 'types/post/common';
 
 @Injectable()
@@ -31,21 +30,6 @@ export class RedisProvider {
   async getLengthWithZSET(member: string, redisKey = REDIS_ZADD_KEY) {
     const length = await this.redis.zscore(redisKey, member);
     return length ? parseInt(length, 10) : 0;
-  }
-
-  async getAllByLengthDesc(
-    key: string,
-    page = PaginationDefault.PAGE_DEFAULT,
-    take = PaginationDefault.TAKE_DEFAULT,
-  ) {
-    return this.redis.zrevrangebyscore(
-      key,
-      '+inf',
-      '-inf',
-      'LIMIT',
-      (page - 1) * take,
-      page * take,
-    );
   }
 
   async updateRecommendPost(
@@ -74,7 +58,7 @@ export class RedisProvider {
     ]);
   }
 
-  async zrange(page: number, take: number, key = REDIS_RECOMMEND_POST_KEY) {
+  async zrevrange(page: number, take: number, key = REDIS_RECOMMEND_POST_KEY) {
     return this.redis.zrevrange(key, (page - 1) * take, page * take);
   }
 

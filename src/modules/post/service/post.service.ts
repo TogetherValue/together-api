@@ -56,7 +56,7 @@ export class PostService {
       category === GetPostsCategory.ENTIRE
         ? REDIS_RECOMMEND_POST_KEY
         : generateRedisRecommendedCategoryKey(category);
-    const values = await this.redisProvider.zrange(page, take, redisKey);
+    const values = await this.redisProvider.zrevrange(page, take, redisKey);
 
     const postIds = values.map((value) => parseInt(value.split(':')[1]));
     const posts = await this.postRepository.findByIdsWithJoin(postIds, {
@@ -86,11 +86,7 @@ export class PostService {
       category === GetPostsCategory.ENTIRE
         ? REDIS_ZADD_KEY
         : generateRedisViewsCategoryKey(category);
-    const values = await this.redisProvider.getAllByLengthDesc(
-      redisKey,
-      page,
-      take,
-    );
+    const values = await this.redisProvider.zrevrange(page, take, redisKey);
 
     const postIds = values.map((value) => parseInt(value.split(':')[1]));
     const posts = await this.postRepository.findByIdsWithJoin(postIds, {
