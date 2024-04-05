@@ -82,7 +82,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'test',
         link: 'test',
         description: 'test',
-        category: 'ANDROID',
+        category: 'NODEJS',
       },
       {
         writerId: 3,
@@ -90,7 +90,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'dsfsdf',
         link: 'test',
         description: 'asdsad',
-        category: 'ANDROID',
+        category: 'NODEJS',
       },
       {
         writerId: 4,
@@ -98,7 +98,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'adsfds',
         link: 'test',
         description: 'dsafdsaf',
-        category: 'ANDROID',
+        category: 'WEB_DEV',
       },
       {
         writerId: 5,
@@ -114,7 +114,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'dsfasdf',
         link: 'test',
         description: 'dfafd',
-        category: 'ANDROID',
+        category: 'IOS',
       },
       {
         writerId: 3,
@@ -122,7 +122,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'asdfadsf',
         link: 'test',
         description: 'fadggf',
-        category: 'ANDROID',
+        category: 'IOS',
       },
 
       {
@@ -131,7 +131,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'asdfadsf',
         link: 'test',
         description: 'fadggf',
-        category: 'ANDROID',
+        category: 'GIT',
       },
 
       {
@@ -140,7 +140,7 @@ export default class UserSeeder implements Seeder {
         thumbnail: 'asdfadsf',
         link: 'test',
         description: 'fadggf',
-        category: 'ANDROID',
+        category: 'IOS',
       },
     ]);
 

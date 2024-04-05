@@ -7,14 +7,14 @@ import {
   PostWithWriter,
   PostWithWriterWithoutToken,
 } from './post.entity';
-import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { PaginationBuilder } from 'src/common/pagination/pagination.builder';
 import { plainToInstance } from 'class-transformer';
 import { PaginationResponse } from 'src/common/pagination/pagination.response';
 import { GetUserPostsQueryDto } from 'src/common/request/user/get-userPosts.query.dto';
 import { IUser } from 'types/user/common';
-import { IPost } from 'types/post/common';
+import { GetPostsCategory, IPost } from 'types/post/common';
 import { GetSubscriptionPostsQueryDto } from 'src/common/request/subscription/get-subscriptionPosts.query.dto';
+import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 
 @Injectable()
 export class PostRepository extends GenericTypeOrmRepository<Post> {
@@ -28,6 +28,7 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
 
   async getPostsWithWriter(
     getPostsQueryDto: GetPostsQueryDto,
+    category: GetPostsCategory,
   ): Promise<PaginationResponse<PostWithWriter>> {
     const { page, take } = getPostsQueryDto;
 
