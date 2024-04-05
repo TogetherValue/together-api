@@ -43,6 +43,11 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
       .build();
   }
 
+  async find(filters: Partial<T>): Promise<T[]> {
+    const findOption: FindManyOptions = { where: filters };
+    return this.getRepository().find(findOption);
+  }
+
   async findOne(filters: Partial<T>): Promise<T> {
     const findOption: FindOneOptions = { where: filters };
     const res = await this.getRepository().findOne(findOption);
