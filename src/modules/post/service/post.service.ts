@@ -26,7 +26,7 @@ export class PostService {
 
   private async getPostView(post: Post) {
     const redisKey = `post:${post.id}`;
-    const views = await this.redisProvider.getLength(redisKey);
+    const views = await this.redisProvider.getLengthWithZSET(redisKey);
 
     return views;
   }
