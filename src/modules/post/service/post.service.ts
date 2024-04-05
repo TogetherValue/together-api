@@ -129,6 +129,8 @@ export class PostService {
     if (!post.isOwnered(userId))
       throw new ForbiddenException('해당 글은 작성자만 삭제할 수 있습니디.');
 
+    const redisKey = `post:${postId}`;
+    await this.redisProvider.delete(redisKey);
     return this.postRepository.deleteById(postId);
   }
 }
