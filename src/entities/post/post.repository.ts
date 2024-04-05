@@ -33,24 +33,44 @@ export class PostRepository extends GenericTypeOrmRepository<Post> {
     const { page, take } = getPostsQueryDto;
 
     const [data, total] = await Promise.all([
-      this.getRepository().find({
-        relations: ['Writer'],
-        select: {
-          Writer: {
-            id: true,
-            avatarUrl: true,
-            githubUrl: true,
-            nickname: true,
-            introduction: true,
-            createdAt: true,
-            deletedAt: true,
-            updatedAt: true,
-          },
-        },
-        skip: (page - 1) * take,
-        take,
-        order: { createdAt: 'DESC' },
-      }),
+      category === GetPostsCategory.ENTIRE
+        ? this.getRepository().find({
+            relations: ['Writer'],
+            select: {
+              Writer: {
+                id: true,
+                avatarUrl: true,
+                githubUrl: true,
+                nickname: true,
+                introduction: true,
+                createdAt: true,
+                deletedAt: true,
+                updatedAt: true,
+              },
+            },
+            skip: (page - 1) * take,
+            take,
+            order: { createdAt: 'DESC' },
+          })
+        : this.getRepository().find({
+            relations: ['Writer'],
+            select: {
+              Writer: {
+                id: true,
+                avatarUrl: true,
+                githubUrl: true,
+                nickname: true,
+                introduction: true,
+                createdAt: true,
+                deletedAt: true,
+                updatedAt: true,
+              },
+            },
+            skip: (page - 1) * take,
+            take,
+            order: { createdAt: 'DESC' },
+            where: { category },
+          }),
       this.getRepository().count(),
     ]);
 

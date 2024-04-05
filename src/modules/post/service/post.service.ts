@@ -1,6 +1,13 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { REDIS_ZADD_KEY } from 'src/common/constant/redis';
+import {
+  REDIS_ZADD_KEY,
+  generateRedisViewsCategoryKey,
+  generateRedisPostIdKey,
+  generateRedisRecommendedCategoryKey,
+  REDIS_RECOMMEND_POST_KEY,
+} from 'src/common/constant/redis';
+import { POST_VIEW_SCORE } from 'src/common/constant/score';
 import { PaginationBuilder } from 'src/common/pagination/pagination.builder';
 import { PaginationResponse } from 'src/common/pagination/pagination.response';
 import { CreatePostDto } from 'src/common/request/post/create-post.dto';
@@ -34,10 +41,40 @@ export class PostService {
   ) {}
 
   private async getPostView(post: Post) {
-    const redisKey = `post:${post.id}`;
-    const views = await this.redisProvider.getLengthWithZSET(redisKey);
+    const postIdKey = generateRedisPostIdKey(post.id);
+    const views = await this.redisProvider.getLengthWithZSET(postIdKey);
 
     return views;
+  }
+
+  private async getPostsSortByRecommended(
+    category: GetPostsCategory,
+    page: number,
+    take: number,
+  ) {
+    const redisKey =
+      category === GetPostsCategory.ENTIRE
+        ? REDIS_RECOMMEND_POST_KEY
+        : generateRedisRecommendedCategoryKey(category);
+    const values = await this.redisProvider.zrange(page, take, redisKey);
+
+    const postIds = values.map((value) => parseInt(value.split(':')[1]));
+    const posts = await this.postRepository.findByIdsWithJoin(postIds, {
+      Writer: true,
+    });
+    posts.sort((a, b) => {
+      const idA = a.id;
+      const idB = b.id;
+      return postIds.indexOf(idA) - postIds.indexOf(idB);
+    });
+
+    const total = await this.redisProvider.getAllCountWithZEST(redisKey);
+    return new PaginationBuilder<PostWithWriterWithoutToken>()
+      .setData(plainToInstance(PostWithWriterWithoutToken, posts))
+      .setPage(page)
+      .setTake(take)
+      .setTotalCount(total)
+      .build();
   }
 
   private async getPostsSortByViews(
@@ -46,7 +83,9 @@ export class PostService {
     take: number,
   ) {
     const redisKey =
-      category === GetPostsCategory.ENTIRE ? REDIS_ZADD_KEY : category;
+      category === GetPostsCategory.ENTIRE
+        ? REDIS_ZADD_KEY
+        : generateRedisViewsCategoryKey(category);
     const values = await this.redisProvider.getAllByLengthDesc(
       redisKey,
       page,
@@ -116,13 +155,19 @@ export class PostService {
     clientIp: string,
   ) {
     const post = await this.postRepository.findByIdOrThrow(postId);
-    const redisKey = `post:${postId}`;
+    const postIdKey = generateRedisPostIdKey(post.id);
     const clientKey = userId ? userId : clientIp;
 
     if (
-      !(await this.redisProvider.getAll(redisKey)).includes(String(clientKey))
-    )
-      await this.redisProvider.insert(redisKey, clientKey, post.category);
+      !(await this.redisProvider.getAll(postIdKey)).includes(String(clientKey))
+    ) {
+      await this.redisProvider.insert(postIdKey, clientKey, post.category);
+      await this.redisProvider.updateRecommendPost(
+        POST_VIEW_SCORE,
+        postIdKey,
+        post.category,
+      );
+    }
 
     if (userId) {
       const userHistory = await this.userHistoryRepository.findOne({
@@ -156,10 +201,9 @@ export class PostService {
         category,
       );
     }
-
-    //  posts = await this.postRepository.getPostsWithWriter(
-    //   getPostsQueryDto,
-    // );
+    if (orederBy === PostOrderBy.RECOMMENDED) {
+      posts = await this.getPostsSortByRecommended(category, page, take);
+    }
 
     if (userId) {
       const postsWithLoginUser = await this.getPostsWithLoginUser(
@@ -197,8 +241,8 @@ export class PostService {
     if (!post.isOwnered(userId))
       throw new ForbiddenException('해당 글은 작성자만 삭제할 수 있습니디.');
 
-    const redisKey = `post:${postId}`;
-    await this.redisProvider.delete(redisKey);
+    const postIdKey = generateRedisPostIdKey(post.id);
+    await this.redisProvider.delete(postIdKey);
     return this.postRepository.deleteById(postId);
   }
 }
