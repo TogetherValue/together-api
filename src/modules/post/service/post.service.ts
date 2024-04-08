@@ -1,17 +1,33 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import {
+  REDIS_ZADD_KEY,
+  generateRedisViewsCategoryKey,
+  generateRedisPostIdKey,
+  generateRedisRecommendedCategoryKey,
+  REDIS_RECOMMEND_POST_KEY,
+} from 'src/common/constant/redis';
+import { POST_VIEW_SCORE } from 'src/common/constant/score';
+import { PaginationBuilder } from 'src/common/pagination/pagination.builder';
+import { PaginationResponse } from 'src/common/pagination/pagination.response';
 import { CreatePostDto } from 'src/common/request/post/create-post.dto';
 import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { GetPostsWithLoginDto } from 'src/common/response/post/getPostsWithLoginDto';
 import { GetPostsWithNonLoginDto } from 'src/common/response/post/getPostsWithNonLoginDto';
 import { MetaDataExtractor } from 'src/common/util/metaDataExtractor';
 import { RedisProvider } from 'src/core/database/redis/redis.provider';
-import { Post } from 'src/entities/post/post.entity';
+import {
+  Post,
+  PostWithWriter,
+  PostWithWriterWithoutToken,
+} from 'src/entities/post/post.entity';
 import { PostRepository } from 'src/entities/post/post.repository';
 import { ScrapRepository } from 'src/entities/scrap/scrap.repository';
 import { UserHistory } from 'src/entities/user-history/user-history.entity';
 import { UserHistoryRepository } from 'src/entities/user-history/user-history.repository';
 import { CreatePost } from 'types/post';
-import { IPost } from 'types/post/common';
+import { GetPostsCategory, IPost } from 'types/post/common';
+import { PostOrderBy } from 'types/post/dto/getPosts';
 import { IUser } from 'types/user/common';
 
 @Injectable()
@@ -25,10 +41,108 @@ export class PostService {
   ) {}
 
   private async getPostView(post: Post) {
-    const redisKey = `post:${post.id}`;
-    const views = await this.redisProvider.getLength(redisKey);
+    const postIdKey = generateRedisPostIdKey(post.id);
+    const views = await this.redisProvider.getLengthWithZSET(postIdKey);
 
     return views;
+  }
+
+  private async getPostsSortByRecommended(
+    category: GetPostsCategory,
+    page: number,
+    take: number,
+  ) {
+    const redisKey =
+      category === GetPostsCategory.ENTIRE
+        ? REDIS_RECOMMEND_POST_KEY
+        : generateRedisRecommendedCategoryKey(category);
+    const values = await this.redisProvider.zrevrange(page, take, redisKey);
+
+    const postIds = values.map((value) => parseInt(value.split(':')[1]));
+    const posts = await this.postRepository.findByIdsWithJoin(postIds, {
+      Writer: true,
+    });
+    posts.sort((a, b) => {
+      const idA = a.id;
+      const idB = b.id;
+      return postIds.indexOf(idA) - postIds.indexOf(idB);
+    });
+
+    const total = await this.redisProvider.getAllCountWithZEST(redisKey);
+    return new PaginationBuilder<PostWithWriterWithoutToken>()
+      .setData(plainToInstance(PostWithWriterWithoutToken, posts))
+      .setPage(page)
+      .setTake(take)
+      .setTotalCount(total)
+      .build();
+  }
+
+  private async getPostsSortByViews(
+    category: GetPostsCategory,
+    page: number,
+    take: number,
+  ) {
+    const redisKey =
+      category === GetPostsCategory.ENTIRE
+        ? REDIS_ZADD_KEY
+        : generateRedisViewsCategoryKey(category);
+    const values = await this.redisProvider.zrevrange(page, take, redisKey);
+
+    const postIds = values.map((value) => parseInt(value.split(':')[1]));
+    const posts = await this.postRepository.findByIdsWithJoin(postIds, {
+      Writer: true,
+    });
+    posts.sort((a, b) => {
+      const idA = a.id;
+      const idB = b.id;
+      return postIds.indexOf(idA) - postIds.indexOf(idB);
+    });
+
+    const total = await this.redisProvider.getAllCountWithZEST(redisKey);
+    return new PaginationBuilder<PostWithWriterWithoutToken>()
+      .setData(plainToInstance(PostWithWriterWithoutToken, posts))
+      .setPage(page)
+      .setTake(take)
+      .setTotalCount(total)
+      .build();
+  }
+
+  private async getPostsWithLoginUser(
+    posts: PaginationResponse<PostWithWriter>,
+    userId: IUser['id'],
+  ) {
+    const postIds = posts.list.map((post) => post.id);
+    const scraps =
+      await this.scrapRepository.getSubscriptionsByUserIdAndPostIds(
+        userId,
+        postIds,
+      );
+
+    const postWithLoginList = [];
+    for (const post of posts.list) {
+      const views = await this.getPostView(post);
+
+      const getPostWithLoginDto = new GetPostsWithLoginDto(post, views, scraps);
+      postWithLoginList.push(getPostWithLoginDto);
+    }
+
+    posts.list = postWithLoginList as any;
+    return posts;
+  }
+
+  private async getPostsWithNonLoginUser(
+    posts: PaginationResponse<PostWithWriter>,
+  ) {
+    const postWithNonLoginList = [];
+    for (const post of posts.list) {
+      const views = await this.getPostView(post);
+
+      const getPostWithNonLoginDto = new GetPostsWithNonLoginDto(post, views);
+      postWithNonLoginList.push(getPostWithNonLoginDto);
+    }
+
+    posts.list = postWithNonLoginList;
+    return posts;
   }
 
   async getPost(
@@ -36,14 +150,20 @@ export class PostService {
     userId: IUser['id'] | undefined,
     clientIp: string,
   ) {
-    await this.postRepository.findByIdOrThrow(postId);
-    const redisKey = `post:${postId}`;
+    const post = await this.postRepository.findByIdOrThrow(postId);
+    const postIdKey = generateRedisPostIdKey(post.id);
     const clientKey = userId ? userId : clientIp;
 
     if (
-      !(await this.redisProvider.getAll(redisKey)).includes(String(clientKey))
-    )
-      await this.redisProvider.insert(redisKey, clientKey);
+      !(await this.redisProvider.getAll(postIdKey)).includes(String(clientKey))
+    ) {
+      await this.redisProvider.insert(postIdKey, clientKey, post.category);
+      await this.redisProvider.updateRecommendPost(
+        POST_VIEW_SCORE,
+        postIdKey,
+        post.category,
+      );
+    }
 
     if (userId) {
       const userHistory = await this.userHistoryRepository.findOne({
@@ -65,44 +185,32 @@ export class PostService {
     getPostsQueryDto: GetPostsQueryDto,
     userId: number | undefined,
   ) {
-    const posts = await this.postRepository.getPostsWithWriter(
-      getPostsQueryDto,
-    );
+    const { category, orederBy, page, take } = getPostsQueryDto;
+    let posts: PaginationResponse<PostWithWriter>;
+
+    if (orederBy === PostOrderBy.VIEWS) {
+      posts = await this.getPostsSortByViews(category, page, take);
+    }
+    if (orederBy === PostOrderBy.LATEST) {
+      posts = await this.postRepository.getPostsWithWriter(
+        getPostsQueryDto,
+        category,
+      );
+    }
+    if (orederBy === PostOrderBy.RECOMMENDED) {
+      posts = await this.getPostsSortByRecommended(category, page, take);
+    }
 
     if (userId) {
-      const postIds = posts.list.map((post) => post.id);
-      const scraps =
-        await this.scrapRepository.getSubscriptionsByUserIdAndPostIds(
-          userId,
-          postIds,
-        );
-
-      const postWithLoginList = [];
-      for (const post of posts.list) {
-        const views = await this.getPostView(post);
-
-        const getPostWithLoginDto = new GetPostsWithLoginDto(
-          post,
-          views,
-          scraps,
-        );
-        postWithLoginList.push(getPostWithLoginDto);
-      }
-
-      posts.list = postWithLoginList as any;
-      return posts;
+      const postsWithLoginUser = await this.getPostsWithLoginUser(
+        posts,
+        userId,
+      );
+      return postsWithLoginUser;
     }
 
-    const postWithNonLoginList = [];
-    for (const post of posts.list) {
-      const views = await this.getPostView(post);
-
-      const getPostWithNonLoginDto = new GetPostsWithNonLoginDto(post, views);
-      postWithNonLoginList.push(getPostWithNonLoginDto);
-    }
-
-    posts.list = postWithNonLoginList;
-    return posts;
+    const postsWithNonLoginUser = await this.getPostsWithNonLoginUser(posts);
+    return postsWithNonLoginUser;
   }
 
   async createPost(
@@ -129,6 +237,8 @@ export class PostService {
     if (!post.isOwnered(userId))
       throw new ForbiddenException('해당 글은 작성자만 삭제할 수 있습니디.');
 
+    const postIdKey = generateRedisPostIdKey(post.id);
+    await this.redisProvider.delete(postIdKey);
     return this.postRepository.deleteById(postId);
   }
 }

@@ -5,6 +5,7 @@ import {
   FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -78,6 +79,17 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
       throw new BadRequestException(`don't exist ${id}`);
     }
     return plainToInstance(this.classType, res);
+  }
+
+  async findByIdsWithJoin(
+    ids: number[],
+    findOptionsRelations: FindOptionsRelations<T>,
+  ): Promise<T[]> {
+    const findOption: FindManyOptions = {
+      where: { id: In(ids) },
+      relations: findOptionsRelations,
+    };
+    return this.getRepository().find(findOption);
   }
 
   async findByIdWithJoinOrThrow(
