@@ -54,7 +54,7 @@ export class GithubProvider {
       id: githubId,
       avatar_url: avatarUrl,
       html_url: githubUrl,
-      name: nickname,
+      login: nickname,
     } = data;
 
     const githubInfo = { githubId, avatarUrl, githubUrl, nickname };

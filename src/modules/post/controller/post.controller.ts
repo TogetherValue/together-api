@@ -14,10 +14,10 @@ import { CreatePostDto } from 'src/common/request/post/create-post.dto';
 import { AccessTokenGuard } from 'src/core/guard/accessToken.guard';
 import { User } from 'src/core/decorator/user.decorator';
 import { IUser } from 'types/user/common';
-import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 import { IPost } from 'types/post/common';
 import { OpenGuard } from 'src/core/guard/openGuard';
 import { Request } from 'express';
+import { GetPostsQueryDto } from 'src/common/request/post/get-posts.query.dto';
 
 @Controller('posts')
 export class PostController {
